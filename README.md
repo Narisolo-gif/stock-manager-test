@@ -111,7 +111,7 @@ stock-manager/
 
 ```bash
 git clone https://github.com/Narisolo-gif/stock-manager-test.git
-cd stock-manager
+cd stock-manager-test
 ```
 
 ### 2. Installer les dépendances PHP
