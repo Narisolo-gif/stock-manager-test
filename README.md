@@ -130,7 +130,7 @@ npm run build
 ### 4. Configurer l'environnement
 
 ```bash
-cp .env.example .env
+cp .env.example .env ou copy .env.example .env (commande windows)
 php artisan key:generate
 ```
 
@@ -219,7 +219,9 @@ L'application est accessible sur : **http://127.0.0.1:8000**
 ---
 
 ## Marges d'améliorations
-
+### Bug
+- les icones paginations sont trop grandes
+- 
 ### Renforcement de l'accès admin
 - Ajouter un système de rôles (`admin`, `user`) et un middleware `role:admin`.
 - Restreindre les vues et actions sensibles aux administrateurs uniquement.
