@@ -110,7 +110,7 @@ stock-manager/
 ### 1. Cloner le projet
 
 ```bash
-git clone https://github.com/votre-user/stock-manager.git
+git clone https://github.com/Narisolo-gif/stock-manager-test.git
 cd stock-manager
 ```
 
