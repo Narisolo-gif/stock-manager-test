@@ -10,13 +10,27 @@ class ClientController extends Controller
 {
     /**
      * Affiche la liste paginée des clients.
+     * Accepte un paramètre ?search=terme pour rechercher par prénom, nom ou e-mail.
      * Route : GET /clients
      */
-    public function index()
+    public function index(Request $request)
     {
-        $clients = Client::latest()->paginate(10);
+        $search = $request->query('search', '');
+        $query = Client::query();
 
-        return view('clients.index', compact('clients'));
+        // Recherche par prénom, nom ou e-mail
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('first_name', 'like', "%{$search}%")
+                  ->orWhere('last_name', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('phone', 'like', "%{$search}%");
+            });
+        }
+
+        $clients = $query->latest()->paginate(10)->withQueryString();
+
+        return view('clients.index', compact('clients', 'search'));
     }
 
     /**

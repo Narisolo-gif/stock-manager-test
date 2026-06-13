@@ -62,7 +62,12 @@
                             <i class="bi bi-box-seam me-1"></i>Produits
                         </a>
                     </li>
-                  
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('clients.*') ? 'active' : '' }}"
+                           href="{{ route('clients.index') }}">
+                            <i class="bi bi-people me-1"></i>Clients
+                        </a>
+                    </li>
                 </ul>
 
                 {{-- Menu utilisateur (affiché uniquement si connecté) --}}

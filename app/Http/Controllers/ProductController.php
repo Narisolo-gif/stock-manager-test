@@ -9,13 +9,34 @@ class ProductController extends Controller
 {
     /**
      * Affiche la liste paginée des produits.
+     * Accepte un paramètre optionnel ?filter=low_stock pour n'afficher
+     * que les produits dont la quantité est inférieure ou égale à 5.
+     * Accepte aussi ?search=terme pour rechercher par nom ou description.
      * Route : GET /products
      */
-    public function index()
+    public function index(Request $request)
     {
-        $products = Product::latest()->paginate(10);
+        $filter = $request->query('filter');
+        $search = $request->query('search', '');
 
-        return view('products.index', compact('products'));
+        $query = Product::query();
+
+        // Filtre stock faible : quantité <= 5
+        if ($filter === 'low_stock') {
+            $query->where('quantity', '<=', 5);
+        }
+
+        // Recherche par nom ou description
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%");
+            });
+        }
+
+        $products = $query->latest()->paginate(10)->withQueryString();
+
+        return view('products.index', compact('products', 'filter', 'search'));
     }
 
     /**

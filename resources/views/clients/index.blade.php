@@ -1,7 +1,7 @@
 {{--
     Vue : clients/index.blade.php
-    Rôle : Liste paginée de tous les clients avec actions CRUD
-    Données reçues : $clients (LengthAwarePaginator)
+    Rôle : Liste paginée de tous les clients avec actions CRUD et recherche
+    Données reçues : $clients (LengthAwarePaginator), $search
 --}}
 
 @extends('layouts.app')
@@ -26,6 +26,33 @@
         </a>
     </div>
 
+    {{-- Barre de recherche --}}
+    <div class="card shadow-sm border-0 rounded-3 mb-4">
+        <div class="card-body p-3">
+            <form method="GET" action="{{ route('clients.index') }}" class="row g-2 align-items-end">
+                <div class="col-12 col-md-7">
+                    <label for="search" class="form-label small fw-semibold text-muted mb-1">Rechercher</label>
+                    <input
+                        type="text"
+                        id="search"
+                        name="search"
+                        class="form-control form-control-sm"
+                        placeholder="Prénom, nom, e-mail ou téléphone…"
+                        value="{{ $search ?? '' }}"
+                    >
+                </div>
+                <div class="col-12 col-md-5 d-flex gap-2">
+                    <button type="submit" class="btn btn-sm btn-outline-primary flex-grow-1">
+                        <i class="bi bi-search me-1"></i>Rechercher
+                    </button>
+                    <a href="{{ route('clients.index') }}" class="btn btn-sm btn-outline-secondary">
+                        <i class="bi bi-x-lg"></i>
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
     {{-- Notifications flash (succès / erreur) --}}
     @if (session('success'))
         <div class="alert alert-success alert-dismissible fade show shadow-sm border-0" role="alert">
@@ -47,7 +74,13 @@
             @if ($clients->isEmpty())
                 <div class="text-center py-5">
                     <i class="bi bi-inbox fs-1 text-muted"></i>
-                    <p class="text-muted mt-3 mb-1">Aucun client enregistré.</p>
+                    <p class="text-muted mt-3 mb-1">
+                        @if ($search ?? false)
+                            Aucun client trouvé pour « {{ $search }} ».
+                        @else
+                            Aucun client enregistré.
+                        @endif
+                    </p>
                     <a href="{{ route('clients.create') }}" class="btn btn-sm btn-outline-primary mt-2">
                         Créer le premier client
                     </a>

@@ -1,7 +1,7 @@
 {{--
     Vue : products/index.blade.php
-    Rôle : Liste paginée de tous les produits avec actions CRUD
-    Données reçues : $products (LengthAwarePaginator)
+    Rôle : Liste paginée de tous les produits avec actions CRUD et recherche
+    Données reçues : $products (LengthAwarePaginator), $search, $filter
 --}}
 
 @extends('layouts.app')
@@ -26,6 +26,33 @@
         </a>
     </div>
 
+    {{-- Barre de recherche et filtres --}}
+    <div class="card shadow-sm border-0 rounded-3 mb-4">
+        <div class="card-body p-3">
+            <form method="GET" action="{{ route('products.index') }}" class="row g-2 align-items-end">
+                <div class="col-12 col-md-7">
+                    <label for="search" class="form-label small fw-semibold text-muted mb-1">Rechercher</label>
+                    <input
+                        type="text"
+                        id="search"
+                        name="search"
+                        class="form-control form-control-sm"
+                        placeholder="Nom ou description du produit…"
+                        value="{{ $search ?? '' }}"
+                    >
+                </div>
+                <div class="col-12 col-md-5 d-flex gap-2">
+                    <button type="submit" class="btn btn-sm btn-outline-primary flex-grow-1">
+                        <i class="bi bi-search me-1"></i>Rechercher
+                    </button>
+                    <a href="{{ route('products.index') }}" class="btn btn-sm btn-outline-secondary">
+                        <i class="bi bi-x-lg"></i>
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
     {{-- Notifications flash (succès / erreur) --}}
     @if (session('success'))
         <div class="alert alert-success alert-dismissible fade show shadow-sm border-0" role="alert">
@@ -41,6 +68,20 @@
         </div>
     @endif
 
+    {{-- Bandeau filtre actif --}}
+    @if ($filter === 'low_stock')
+        <div class="alert alert-warning border-0 shadow-sm d-flex justify-content-between align-items-center" role="alert">
+            <span>
+                <i class="bi bi-funnel-fill me-2"></i>
+                Filtre actif : <strong>stock faible (≤ 5 unités)</strong> —
+                {{ $products->total() }} produit{{ $products->total() > 1 ? 's' : '' }} concerné{{ $products->total() > 1 ? 's' : '' }}
+            </span>
+            <a href="{{ route('products.index') }}" class="btn btn-sm btn-outline-secondary">
+                <i class="bi bi-x-lg me-1"></i>Effacer le filtre
+            </a>
+        </div>
+    @endif
+
     {{-- Tableau des produits --}}
     <div class="card shadow-sm border-0 rounded-3">
         <div class="card-body p-0">
@@ -48,7 +89,13 @@
                 {{-- État vide --}}
                 <div class="text-center py-5">
                     <i class="bi bi-inbox fs-1 text-muted"></i>
-                    <p class="text-muted mt-3 mb-1">Aucun produit enregistré.</p>
+                    <p class="text-muted mt-3 mb-1">
+                        @if ($search ?? false)
+                            Aucun produit trouvé pour « {{ $search }} ».
+                        @else
+                            Aucun produit enregistré.
+                        @endif
+                    </p>
                     <a href="{{ route('products.create') }}" class="btn btn-sm btn-outline-primary mt-2">
                         Créer le premier produit
                     </a>
