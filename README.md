@@ -1,61 +1,362 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Stock Manager
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Application web de gestion de stock développée avec **Laravel 12** et **Bootstrap 5**.  
+Elle permet de gérer des produits et des clients avec un tableau de bord synthétique.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Table des matières
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+1. [Prérequis](#prérequis)
+2. [Stack technique](#stack-technique)
+3. [Architecture du projet](#architecture-du-projet)
+4. [Installation](#installation)
+5. [Lancer l'application](#lancer-lapplication)
+6. [Compte de test](#compte-de-test)
+7. [Fonctionnalités](#fonctionnalités)
+8. [Marges d'améliorations](#marges-dameliorations)
+9. [Routes disponibles](#routes-disponibles)
+10. [Guide de test manuel](#guide-de-test-manuel)
+11. [Remettre la base à zéro](#remettre-la-base-%C3%A0-z%C3%A9ro)
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## Prérequis
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+| Outil | Version utilisée |
+|---|---|
+| PHP | 8.2.12 |
+| Composer | 2.8.10 |
+| Node.js | 18+ |
+| NPM | 9+ |
+| MySQL| 8.0+ |
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+---
 
-## Laravel Sponsors
+## Stack technique
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+- **Backend** : Laravel 12
+- **PHP** : 8.2.12
+- **Composer** : 2.8.10
+- **Authentification** : Laravel Breeze
+- **Frontend** : Bootstrap 5.3 + Bootstrap Icons
+- **Base de données** : MySQL (SQLite supporté pour les tests rapides)
+- **Templating** : Blade
 
-### Premium Partners
+---
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+## Architecture du projet
 
-## Contributing
+```
+stock-manager/
+│
+├── app/
+│   ├── Http/
+│   │   ├── Controllers/
+│   │   │   ├── Auth/                        # Contrôleurs Breeze (login, register…)
+│   │   │   ├── ClientController.php         # CRUD clients
+│   │   │   ├── DashboardController.php      # Statistiques du tableau de bord
+│   │   │   ├── ProductController.php        # CRUD produits
+│   │   │   ├── ProfileController.php        # Profil utilisateur
+│   │   │   └── Controller.php               # Classe de base
+│   │   └── Middleware/                      # Middleware applicatifs
+│   └── Models/
+│       ├── Client.php
+│       ├── Product.php
+│       └── User.php
+│
+├── database/
+│   ├── factories/
+│   │   ├── ClientFactory.php                # Générateur de faux clients
+│   │   ├── ProductFactory.php               # Générateur de faux produits
+│   │   └── UserFactory.php
+│   ├── migrations/
+│   │   ├── 2026_06_13_182119_create_products_table.php
+│   │   ├── 2026_06_13_184547_create_clients_table.php
+│   │   └── ... autres migrations
+│   └── seeders/
+│       ├── ClientSeeder.php
+│       ├── DatabaseSeeder.php               # Point d'entrée des seeders
+│       ├── ProductSeeder.php
+│       └── UserSeeder.php                   # Compte admin de test
+│
+├── resources/
+│   ├── css/
+│   ├── js/
+│   └── views/
+│       ├── auth/                            # Vues Breeze (login, register…)
+│       ├── clients/
+│       │   ├── create.blade.php
+│       │   ├── edit.blade.php
+│       │   └── index.blade.php
+│       ├── components/                      # Composants réutilisables
+│       ├── dashboard.blade.php              # Tableau de bord
+│       ├── layouts/
+│       │   └── app.blade.php                # Layout principal Bootstrap
+│       └── products/
+│           ├── create.blade.php             # Formulaire création
+│           ├── edit.blade.php               # Formulaire édition
+│           └── index.blade.php              # Liste paginée
+│
+└── routes/
+    ├── auth.php                             # Routes Breeze
+    └── web.php                              # Routes principales
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+---
 
-## Code of Conduct
+## Installation
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### 1. Cloner le projet
 
-## Security Vulnerabilities
+```bash
+git clone https://github.com/votre-user/stock-manager.git
+cd stock-manager
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### 2. Installer les dépendances PHP
 
-## License
+```bash
+composer install
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### 3. Installer les dépendances JS
 
-la vidéo que le panel est protégé par l'authentification Breeze et qu'une gestion fine des rôles serait une amélioration naturelle.
+```bash
+npm install
+npm run build
+```
+
+### 4. Configurer l'environnement
+
+```bash
+cp .env.example .env
+php artisan key:generate
+```
+
+Ouvre le fichier `.env` et configure ta base de données :
+
+```env
+# MySQL
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=stock-manager
+DB_USERNAME=root
+DB_PASSWORD=
+
+```
+
+
+### 5. Créer la base de données (MySQL uniquement)
+
+```sql
+CREATE DATABASE `stock-manager` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+```
+
+### 6. Migrer et injecter les données de test
+
+```bash
+php artisan migrate --seed
+```
+
+Cette commande crée toutes les tables et insère automatiquement :
+
+| Données | Quantité |
+|---|---|
+| Compte admin | 1 |
+| Produits (stock normal) | 20 |
+| Produits (stock faible ≤ 5) | 4 |
+| Produits (rupture de stock) | 3 |
+| Clients | 15 |
+
+---
+
+## Lancer l'application
+
+```bash
+php artisan serve
+```
+
+L'application est accessible sur : **http://127.0.0.1:8000**
+
+---
+
+## Compte de test
+
+| Champ | Valeur |
+|---|---|
+| **Email** | `admin@stock.com` |
+| **Mot de passe** | `password` |
+
+---
+
+## Fonctionnalités
+
+### Tableau de bord
+- Nombre total de produits
+- Nombre total de clients
+- Nombre de produits en stock faible (quantité ≤ 5) avec alerte visuelle
+- Accès rapides vers les actions principales
+
+### Produits
+- Lister avec pagination (10 par page)
+- Badges de stock colorés (vert / orange / rouge)
+- Créer avec validation complète
+- Modifier
+- Supprimer avec confirmation
+
+### Clients
+- Lister avec pagination
+- Créer, modifier, supprimer
+
+### Authentification (Breeze)
+- Inscription / Connexion
+- Déconnexion
+- Modification du profil et du mot de passe
+- Redirection automatique : session active → dashboard, sinon → login
+
+---
+
+## Marges d'améliorations
+
+### Renforcement de l'accès admin
+- Ajouter un système de rôles (`admin`, `user`) et un middleware `role:admin`.
+- Restreindre les vues et actions sensibles aux administrateurs uniquement.
+- Ajouter des politiques (`Gate` / `Policy`) pour sécuriser l'accès aux ressources produits et clients.
+- Journaliser les actions CRUD avec audit trail pour les suppressions et modifications.
+- Activer une validation multi-facteur ou une vérification renforcée pour le compte admin.
+
+### Division en sprints par module
+- **Sprint 1 : Authentification & dashboard**
+  - Mise en place de Breeze, login/logout, profil, accès au dashboard.
+  - Tableau de bord et redirections de base.
+- **Sprint 2 : Gestion des produits**
+  - CRUD produits, validations, listes paginées, affichage des statuts de stock.
+  - Recherche et filtres de stock.
+- **Sprint 3 : Gestion des clients**
+  - CRUD clients, validations, listes clients, recherche.
+  - Ajout de champs contacts et adresse.
+- **Sprint 4 : Améliorations UX / reporting**
+  - Recherche avancée, messages d'erreur, responsive design.
+  - Export de données, sauvegarde, tests supplémentaires.
+
+### Autres pistes
+- Ajouter une API REST pour produits et clients.
+- Ajouter l'import/export CSV et Excel.
+- Ajouter des tests automatisés fonctionnels et unitaires.
+- Mettre en place un vrai moteur de recherche (Scout / Elasticsearch) pour la recherche textuelle.
+- Gérer des permissions plus fines (`CRUD` par rôle, accès module). 
+
+---
+
+## Routes disponibles
+
+### Publiques (redirigent vers login si non connecté)
+
+| Méthode | URL | Description |
+|---|---|---|
+| GET | `/` | Redirige vers dashboard ou login |
+| GET | `/login` | Page de connexion |
+| GET | `/register` | Page d'inscription |
+
+### Protégées (authentification requise)
+
+| Méthode | URL | Description |
+|---|---|---|
+| GET | `/dashboard` | Tableau de bord |
+| GET | `/products` | Liste des produits |
+| GET | `/products/create` | Formulaire création produit |
+| POST | `/products` | Enregistrer un produit |
+| GET | `/products/{id}/edit` | Formulaire édition produit |
+| PUT | `/products/{id}` | Mettre à jour un produit |
+| DELETE | `/products/{id}` | Supprimer un produit |
+| GET | `/clients` | Liste des clients |
+| GET | `/clients/create` | Formulaire création client |
+| POST | `/clients` | Enregistrer un client |
+| GET | `/clients/{id}/edit` | Formulaire édition client |
+| PUT | `/clients/{id}` | Mettre à jour un client |
+| DELETE | `/clients/{id}` | Supprimer un client |
+| GET | `/profile` | Éditer le profil |
+| POST | `/logout` | Se déconnecter |
+
+> Consulter toutes les routes : `php artisan route:list`
+
+---
+
+## Guide de test manuel
+
+### Authentification
+
+| # | Action | Résultat attendu |
+|---|---|---|
+| 1 | Ouvrir `http://127.0.0.1:8000` sans session | Redirigé vers `/login` |
+| 2 | Se connecter avec `admin@stock.com` / `password` | Redirigé vers `/dashboard` |
+| 3 | Rouvrir `/` avec session active | Redirigé vers `/dashboard` |
+| 4 | Cliquer sur **Se déconnecter** | Redirigé vers `/login` |
+| 5 | Tenter d'accéder à `/dashboard` sans session | Redirigé vers `/login` |
+
+### Tableau de bord
+
+| # | Action | Résultat attendu |
+|---|---|---|
+| 6 | Consulter `/dashboard` | 3 cartes affichent les stats (27 produits, 15 clients, 7 en stock faible/rupture) |
+| 7 | Vérifier la carte **Stock faible** | Chiffre en rouge si > 0 |
+
+### Produits
+
+| # | Action | Résultat attendu |
+|---|---|---|
+| 8 | Aller sur `/products` | Tableau paginé, 10 produits par page |
+| 9 | Cliquer **Nouveau produit** | Formulaire vide s'affiche |
+| 10 | Soumettre le formulaire vide | Erreurs de validation en rouge sur chaque champ |
+| 11 | Saisir un prix négatif (`-5`) | Erreur : "Le prix ne peut pas être négatif" |
+| 12 | Créer un produit valide | Redirigé vers la liste avec message de succès vert |
+| 13 | Cliquer **Modifier** sur un produit | Formulaire pré-rempli avec les données existantes |
+| 14 | Vider le nom et sauvegarder | Erreur de validation, données restaurées |
+| 15 | Cliquer **Supprimer** | Confirmation navigateur, puis suppression et message de succès |
+| 16 | Créer un produit avec quantité `0` | Badge **Rupture** rouge dans la liste |
+| 17 | Créer un produit avec quantité `3` | Badge **3 restants** orange dans la liste |
+| 18 | Créer un produit avec quantité `50` | Badge **50 en stock** vert dans la liste |
+
+### Clients
+
+| # | Action | Résultat attendu |
+|---|---|---|
+| 19 | Aller sur `/clients` | Liste des 15 clients seedés |
+| 20 | Créer / modifier / supprimer un client | Même comportement que les produits |
+
+---
+
+## Remettre la base à zéro
+
+Pour réinitialiser complètement la base et réinjecter les données de test :
+
+```bash
+php artisan migrate:fresh --seed
+```
+
+> ⚠️ Cette commande **supprime toutes les données** et recrée les tables depuis zéro.
+> À utiliser uniquement en environnement de développement/test.
+
+---
+
+## Commandes utiles
+
+```bash
+# Lancer le serveur de développement
+php artisan serve
+
+# Vider tous les caches
+php artisan optimize:clear
+
+# Lister toutes les routes
+php artisan route:list
+
+# Vérifier l'état des migrations
+php artisan migrate:status
+
+# Seed uniquement (sans recréer les tables)
+php artisan db:seed
+```
+
