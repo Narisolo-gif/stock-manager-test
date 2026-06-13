@@ -219,9 +219,7 @@ L'application est accessible sur : **http://127.0.0.1:8000**
 ---
 
 ## Marges d'améliorations
-### Bug
-- les icones paginations sont trop grandes
-- 
+
 ### Renforcement de l'accès admin
 - Ajouter un système de rôles (`admin`, `user`) et un middleware `role:admin`.
 - Restreindre les vues et actions sensibles aux administrateurs uniquement.
