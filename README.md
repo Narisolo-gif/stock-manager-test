@@ -248,6 +248,10 @@ L'application est accessible sur : **http://127.0.0.1:8000**
 - Mettre en place un vrai moteur de recherche (Scout / Elasticsearch) pour la recherche textuelle.
 - Gérer des permissions plus fines (`CRUD` par rôle, accès module). 
 
+### Test plus approfondie
+- re cloner le projet
+- suivre le processus d'installation
+- retester l'application
 ---
 
 ## Routes disponibles
